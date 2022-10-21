@@ -2,7 +2,7 @@ const { getVoiceConnection } = require("@discordjs/voice");
 const send = require("../send");
 
 function stop(interaction) {
-  if (interaction.guild.id !== undefined) {
+  if (getVoiceConnection(interaction.guild.id)) {
     getVoiceConnection(interaction.guild.id).destroy();
     send(
       "reply",
@@ -14,11 +14,7 @@ function stop(interaction) {
       interaction
     );
   } else {
-    send(
-      "reply",
-      `🛑 Có chơi nhạc đâu mà dừng ?? 🤡 ??`,
-      interaction
-    );
+    send("reply", `🛑 Có chơi nhạc đâu mà dừng ?? 🤡 ??`, interaction);
   }
 }
 
