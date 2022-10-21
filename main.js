@@ -128,7 +128,7 @@ client.on("interactionCreate", async (interaction) => {
 
 client.on("messageCreate", (message) => {
   const args = message.content.substring(prefix.length).split(" ");
-  switch (args[0]) {
+  switch (args[0].toLocaleLowerCase()) {
     case "play":
       if (message.member.voice.channel) {
         botFunction.play(message);
@@ -144,8 +144,8 @@ client.on("messageCreate", (message) => {
       botFunction.skip(message, songQueue);
       break;
     case "stop":
-        songQueue = [];
-        botFunction.stop(message);
+      songQueue = [];
+      botFunction.stop(message);
       break;
     case "pause":
       botFunction.pause(message);

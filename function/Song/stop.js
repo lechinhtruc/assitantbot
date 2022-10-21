@@ -14,7 +14,7 @@ function stop(interaction) {
       interaction
     );
   } else {
-    send("reply", `🛑 Có chơi nhạc đâu mà dừng ?? 🤡 ??`, interaction);
+    send("reply", `**🛑 Có chơi nhạc đâu mà dừng ?? 🤡 ??**`, interaction);
   }
 }
 
