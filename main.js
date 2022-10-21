@@ -90,7 +90,8 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.commandName === "play") {
     try {
       if (interaction.member.voice.channel) {
-        botFunction.play(interaction, songQueue);
+        /* botFunction.play(interaction, songQueue); */
+        botFunction.play(interaction);
       } else {
         botFunction.send(
           "reply",
@@ -146,4 +147,5 @@ client.on("messageCreate", (message) => {});
 
 client.login(process.env.DISCORD_TOKEN);
 
+exports.songQueue = songQueue;
 /* console.log(process.env.DISCORD_TOKEN) */

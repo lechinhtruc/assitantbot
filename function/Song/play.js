@@ -9,37 +9,47 @@ const joinVoice = require("./join");
 const send = require("../send");
 const { bold } = require("discord.js");
 
-function play(interaction, songQueue) {
+let queue = require("../../main");
+let ownerinteraction;
+
+player.on("stateChange", async (oldState, newState) => {
+  if (
+    newState.status === AudioPlayerStatus.Idle &&
+    oldState.status !== AudioPlayerStatus.Idle
+  ) {
+    queue.songQueue.shift();
+    if (queue.songQueue.length > 0 && queue.songQueue[0] !== undefined) {
+      playSong(
+        queue.songQueue[0].url,
+        queue.songQueue[0].title,
+        ownerinteraction
+      );
+    }
+  }
+});
+
+function play(interaction) {
   const url = interaction.options.getString("url");
   const channelId = interaction.member.voice.channel.id;
   const guildId = interaction.guild.id;
   const adapterCreator = interaction.guild.voiceAdapterCreator;
-  if (songQueue.length === 0) {
+  ownerinteraction = interaction;
+  if (queue.songQueue.length === 0) {
     interaction.deferReply({ ephemeral: true });
-    getDetailVideo(url, songQueue, interaction).then(async () => {
-      if (songQueue[0] !== undefined) {
+    getDetailVideo(url, queue.songQueue, interaction).then(async () => {
+      if (queue.songQueue[0] !== undefined) {
         joinVoice(channelId, guildId, adapterCreator, player);
-        playSong(songQueue[0].url, songQueue[0].title, interaction);
-        interaction.editReply(`🎶 ${bold(`\`${songQueue[0].title}\``)}`);
-      }
-    });
-
-    player.on("stateChange", async (oldState, newState) => {
-      if (
-        newState.status === AudioPlayerStatus.Idle &&
-        oldState.status !== AudioPlayerStatus.Idle
-      ) {
-        songQueue.shift();
-        if (songQueue.length > 0 && songQueue[0] !== undefined) {
-          playSong(songQueue[0].url, songQueue[0].title, interaction);
-        }
+        playSong(queue.songQueue[0].url, queue.songQueue[0].title, interaction);
+        interaction.editReply(`🎶 ${bold(`\`${queue.songQueue[0].title}\``)}`);
       }
     });
   } else {
-    getDetailVideo(url, songQueue).then(() => {
+    getDetailVideo(url, queue.songQueue).then(() => {
       send(
         "reply",
-        `🎶 Thêm bài **\`${songQueue.slice(-1)[0].title}\`** vào hàng chờ.`,
+        `🎶 Thêm bài **\`${
+          queue.songQueue.slice(-1)[0].title
+        }\`** vào hàng chờ.`,
         interaction
       );
     });
@@ -92,8 +102,9 @@ async function getDetailVideo(url, queue, interaction) {
         });
         return true;
       })
-      .catch((err) => {
-        throw err;
+      .catch(async (err) => {
+        await send("reply", `⛔ Nhạc không tồn tại.`, interaction);
+        return;
       });
   } else {
     await ytsr(url, { pages: 1, gl: "VN", hl: "VI", limit: 5 })
