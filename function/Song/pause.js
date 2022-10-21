@@ -5,7 +5,7 @@ function pause(interaction) {
   player.pause();
   send(
     "reply",
-    `🛑 <@${interaction.user.id}> đã tạm dừng chơi nhạc.`,
+    `🛑 <@${interaction.user.id}> đã yêu cầu tạm dừng chơi nhạc.`,
     interaction
   );
 }
