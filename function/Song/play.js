@@ -14,7 +14,7 @@ function play(interaction, songQueue) {
   const channelId = interaction.member.voice.channel.id;
   const guildId = interaction.guild.id;
   const adapterCreator = interaction.guild.voiceAdapterCreator;
-  if (songQueue.length <= 0) {
+  if (songQueue.length === 0) {
     interaction.deferReply({ ephemeral: true });
     getDetailVideo(url, songQueue, interaction).then(async () => {
       if (songQueue[0] !== undefined) {
@@ -24,10 +24,15 @@ function play(interaction, songQueue) {
       }
     });
 
-    player.on(AudioPlayerStatus.Idle, async () => {
-      songQueue.shift();
-      if (songQueue.length > 0 && songQueue[0] !== undefined) {
-        playSong(songQueue[0].url, songQueue[0].title, interaction);
+    player.on("stateChange", async (oldState, newState) => {
+      if (
+        newState.status === AudioPlayerStatus.Idle &&
+        oldState.status !== AudioPlayerStatus.Idle
+      ) {
+        songQueue.shift();
+        if (songQueue.length > 0 && songQueue[0] !== undefined) {
+          playSong(songQueue[0].url, songQueue[0].title, interaction);
+        }
       }
     });
   } else {
