@@ -127,6 +127,8 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 client.on("messageCreate", (message) => {
+  if (!message.content.startsWith(prefix)) return;
+
   const args = message.content.substring(prefix.length).split(" ");
   switch (args[0].toLocaleLowerCase()) {
     case "play":

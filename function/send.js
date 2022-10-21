@@ -1,13 +1,17 @@
 async function sendMessageToChannel(type, content, interaction) {
-  if (type === "reply") {
-    await interaction.reply({
-      content: content,
-    });
-  }
-  if (type === "sendAll") {
-    await interaction.channel.send({
-      content: content,
-    });
+  try {
+    if (type === "reply") {
+      await interaction.reply({
+        content: content,
+      });
+    }
+    if (type === "sendAll") {
+      await interaction.channel.send({
+        content: content,
+      });
+    }
+  } catch (err) {
+    throw err;
   }
 }
 

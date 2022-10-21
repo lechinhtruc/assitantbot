@@ -32,7 +32,7 @@ function play(interaction) {
   const url =
     interaction.options !== undefined
       ? interaction.options.getString("url")
-      : interaction.content.substring(1).split(" ")[1];
+      : interaction.content.substring(interaction.content.indexOf(" "));
   const channelId = interaction.member.voice.channel.id;
   const guildId = interaction.guild.id;
   const adapterCreator = interaction.guild.voiceAdapterCreator;
@@ -42,7 +42,9 @@ function play(interaction) {
       if (queue.songQueue[0] !== undefined) {
         joinVoice(channelId, guildId, adapterCreator, player);
         playSong(queue.songQueue[0].url, queue.songQueue[0].title, interaction);
-        interaction.reply(`🎶 ${bold(`\`${queue.songQueue[0].title}\``)}`);
+        interaction.reply({
+          content: `🎶 ${bold(`\`${queue.songQueue[0].title}\``)}`,
+        });
       }
     });
   } else {
@@ -61,9 +63,10 @@ function play(interaction) {
 function playSong(url, title, interaction) {
   if (url !== undefined) {
     getSongStream(url)
-      .then(async (response) => {
+      .then((response) => {
         if (response) {
-          await player.play(response);
+          player.stop();
+          setTimeout(() => player.play(response), 100);
           send("sendAll", `🎶 Lên nhạc: ${bold(`\`${title}\``)}`, interaction);
         }
       })
