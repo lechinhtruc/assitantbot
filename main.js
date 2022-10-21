@@ -31,6 +31,7 @@ const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
 
 const commands = require("./commands");
 const birthDataPath = "./data/birthData.json";
+const prefix = process.env.prefix;
 
 let songQueue = [];
 let birthQueue = [];
@@ -71,26 +72,22 @@ client.once("ready", (client) => {
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
-  if (interaction.commandName === "info") {
-    botFunction.info(interaction);
-  }
-
-  if (interaction.commandName === "gif") {
-    try {
-      botFunction.gif(interaction);
-    } catch {
-      return;
-    }
-  }
-
-  if (interaction.commandName === "randombruh") {
-    botFunction.randombruh(interaction);
-  }
-
-  if (interaction.commandName === "play") {
-    try {
+  switch (interaction.commandName) {
+    case "info":
+      botFunction.info(interaction);
+      break;
+    case "gif":
+      try {
+        botFunction.gif(interaction);
+      } catch {
+        return;
+      }
+      break;
+    case "randombruh":
+      botFunction.randombruh(interaction);
+      break;
+    case "play":
       if (interaction.member.voice.channel) {
-        /* botFunction.play(interaction, songQueue); */
         botFunction.play(interaction);
       } else {
         botFunction.send(
@@ -99,51 +96,76 @@ client.on("interactionCreate", async (interaction) => {
           interaction
         );
       }
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  if (interaction.commandName === "skip") {
-    botFunction.skip(interaction, songQueue);
-  }
-
-  if (interaction.commandName === "queue") {
-    botFunction.queue(interaction, songQueue);
-  }
-
-  if (interaction.commandName === "skipto") {
-    const position = interaction.options.getNumber("position");
-    botFunction.skipto(interaction, songQueue, position);
-  }
-
-  if (interaction.commandName === "pause") {
-    botFunction.pause(interaction);
-  }
-
-  if (interaction.commandName === "unpause") {
-    botFunction.unpause(interaction);
-  }
-
-  if (interaction.commandName === "stop") {
-    try {
+      break;
+    case "skip":
+      botFunction.skip(interaction, songQueue);
+      break;
+    case "queue":
+      botFunction.queue(interaction, songQueue);
+      break;
+    case "skipto":
+      const position = interaction.options.getNumber("position");
+      botFunction.skipto(interaction, songQueue, position);
+      break;
+    case "pause":
+      botFunction.pause(interaction);
+      break;
+    case "unpause":
+      botFunction.unpause(interaction);
+      break;
+    case "stop":
       songQueue = [];
       botFunction.stop(interaction);
-    } catch {
-      return false;
-    }
-  }
-
-  if (interaction.commandName === "birthday") {
-    botFunction.scheduleBirth(interaction, birthDataPath, birthQueue);
-  }
-
-  if (interaction.commandName === "help") {
-    botFunction.help(interaction);
+      break;
+    case "birthday":
+      botFunction.scheduleBirth(interaction, birthDataPath, birthQueue);
+      break;
+    case "help":
+      botFunction.help(interaction);
+      break;
   }
 });
 
-client.on("messageCreate", (message) => {});
+client.on("messageCreate", (message) => {
+  const args = message.content.substring(prefix.length).split(" ");
+  switch (args[0]) {
+    case "play":
+      if (message.member.voice.channel) {
+        botFunction.play(message);
+      } else {
+        botFunction.send(
+          "reply",
+          `🤡 Nhà mày ở đâu?Cho bố cái địa chỉ!`,
+          message
+        );
+      }
+      break;
+    case "skip":
+      botFunction.skip(message, songQueue);
+      break;
+    case "stop":
+      try {
+        songQueue = [];
+        botFunction.stop(message);
+      } catch {
+        return false;
+      }
+      break;
+    case "pause":
+      botFunction.pause(message);
+      break;
+    case "unpause":
+      botFunction.unpause(message);
+      break;
+    case "skipto":
+      const position = args[1];
+      botFunction.skipto(message, songQueue, position);
+      break;
+    case "queue":
+      botFunction.queue(message, songQueue);
+      break;
+  }
+});
 
 client.login(process.env.DISCORD_TOKEN);
 

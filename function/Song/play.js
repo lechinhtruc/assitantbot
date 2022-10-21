@@ -29,18 +29,20 @@ player.on("stateChange", async (oldState, newState) => {
 });
 
 function play(interaction) {
-  const url = interaction.options.getString("url");
+  const url =
+    interaction.options !== undefined
+      ? interaction.options.getString("url")
+      : interaction.content.substring(1).split(" ")[1];
   const channelId = interaction.member.voice.channel.id;
   const guildId = interaction.guild.id;
   const adapterCreator = interaction.guild.voiceAdapterCreator;
   ownerinteraction = interaction;
   if (queue.songQueue.length === 0) {
-    interaction.deferReply({ ephemeral: true });
     getDetailVideo(url, queue.songQueue, interaction).then(async () => {
       if (queue.songQueue[0] !== undefined) {
         joinVoice(channelId, guildId, adapterCreator, player);
         playSong(queue.songQueue[0].url, queue.songQueue[0].title, interaction);
-        interaction.editReply(`🎶 ${bold(`\`${queue.songQueue[0].title}\``)}`);
+        interaction.reply(`🎶 ${bold(`\`${queue.songQueue[0].title}\``)}`);
       }
     });
   } else {

@@ -5,18 +5,18 @@ function pause(interaction) {
   player.pause();
   send(
     "reply",
-    `🛑 <@${interaction.user.id}> đã yêu cầu tạm dừng chơi nhạc.`,
+    `🛑 <@${
+      interaction.user !== undefined
+        ? interaction.user.id
+        : interaction.author.id
+    }> đã yêu cầu tạm dừng chơi nhạc.`,
     interaction
   );
 }
 
 function unpause(interaction) {
   player.unpause();
-  send(
-    "reply",
-    `🎶 Tiếp tục chơi nhạc.`,
-    interaction
-  );
+  send("reply", `🎶 Tiếp tục chơi nhạc.`, interaction);
 }
 
 module.exports = { pause, unpause };

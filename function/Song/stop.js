@@ -5,7 +5,11 @@ function stop(interaction) {
   getVoiceConnection(interaction.guild.id).destroy();
   send(
     "reply",
-    `⏹️ ${interaction.user.username} đã yêu cầu dừng chơi nhạc :(`,
+    `⏹️ ${
+      interaction.user !== undefined
+        ? interaction.user.username
+        : interaction.author.username
+    } đã yêu cầu dừng chơi nhạc :(`,
     interaction
   );
   return;
