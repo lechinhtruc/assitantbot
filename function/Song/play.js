@@ -12,21 +12,27 @@ const { bold } = require("discord.js");
 let queue = require("../../main");
 let ownerinteraction;
 
-
-
 player.on("stateChange", async (oldState, newState) => {
   if (
     newState.status === AudioPlayerStatus.Idle &&
     oldState.status !== AudioPlayerStatus.Idle
   ) {
     queue.songQueue.shift();
-    console.log(queue.songQueue);
     if (queue.songQueue.length > 0 && queue.songQueue[0] !== undefined) {
       playSong(
         queue.songQueue[0].url,
         queue.songQueue[0].title,
         ownerinteraction
       );
+    } else {
+      ownerinteraction.client.user.setPresence({
+        activities: [
+          {
+            name: process.env.defaultStatus,
+            type: 1,
+          },
+        ],
+      });
     }
   }
 });
@@ -70,6 +76,14 @@ function playSong(url, title, interaction) {
         if (response) {
           setTimeout(() => player.play(response), 100);
           send("sendAll", `🎶 Lên nhạc: ${bold(`\`${title}\``)}`, interaction);
+          interaction.client.user.setPresence({
+            activities: [
+              {
+                name: title,
+                type: 1,
+              },
+            ],
+          });
         }
       })
       .catch((err) => {

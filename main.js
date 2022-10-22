@@ -53,12 +53,12 @@ let currentSong = 0; */
 client.once("ready", (client) => {
   const queue = fs.readFileSync(birthDataPath);
   birthQueue = JSON.parse(queue);
+  botFunction.loadSchedule(birthQueue, client);
   client.user.setPresence({
     activities: [
       {
-        name: "Nhạc vàng",
-        type: 1,
-        url: "https://www.youtube.com/channel/UCWm8tWlw4VFfFchroVssxvg",
+        name: process.env.defaultStatus,
+        type: 1
       },
     ],
     status: "idle",
@@ -117,7 +117,7 @@ client.on("interactionCreate", async (interaction) => {
       botFunction.stop(interaction);
       break;
     case "birthday":
-      botFunction.scheduleBirth(interaction, birthDataPath, birthQueue);
+      botFunction.addSchedule(interaction, birthDataPath, birthQueue);
       break;
     case "help":
       botFunction.help(interaction);

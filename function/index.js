@@ -8,7 +8,7 @@ const skipto = require("./Song/skipto");
 const { pause, unpause } = require("./Song/pause");
 
 /* Schedule */
-const scheduleBirth = require("./Schedule/birthday");
+const { addSchedule, loadSchedule } = require("./Schedule/birthday");
 
 /* Help */
 const help = require("./help");
@@ -32,7 +32,8 @@ module.exports = {
   queue,
   skipto,
   randombruh,
-  scheduleBirth,
+  addSchedule,
+  loadSchedule,
   help,
   info,
   gif,

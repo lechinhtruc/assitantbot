@@ -9,18 +9,43 @@ function addSchedule(interaction, birthDataPath, birthQueue) {
   const birthYear = interaction.options.getNumber("year");
   const year = new Date();
   const born = new Date(birthYear, birthMonth - 1, birthDay, 0, 0, 0);
-  const date = new Date(year.getFullYear(), birthMonth - 1, birthDay, 0, 0, 0);
-  birthQueue.push({
-    id: userId,
-    born: born,
-    birth: date,
-  });
+  const exits = birthQueue.findIndex((item) => item.id === userId);
+
+  let date = new Date(year.getFullYear(), birthMonth - 1, birthDay, 0, 0, 0);
+  if (date < year) {
+    date = new Date(year.getFullYear() + 1, birthMonth - 1, birthDay, 0, 0, 0);
+  }
+
+  if (exits !== -1) {
+    birthQueue[exits].born = born;
+    birthQueue[exits].birth = date;
+    birthQueue[exits].channelId = interaction.channelId;
+    schedule.cancelJob(userId);
+  } else {
+    birthQueue.push({
+      id: userId.toString(userId),
+      channelId: interaction.channelId,
+      born: born,
+      birth: date,
+    });
+  }
+
   fs.writeFileSync(birthDataPath, JSON.stringify(birthQueue));
-  scheduleBirth(date, interaction);
+  scheduleBirth(userId, date, interaction);
 }
 
-function scheduleBirth(date, interaction) {
-  schedule.scheduleJob(date, function () {
+function loadSchedule(birthQueue, client) {
+  birthQueue.map((item) => {
+    schedule.scheduleJob(item.id, item.date, function () {
+      client.channels.cache
+        .get(item.channelId)
+        .send(`** 🎂🎂 CHÚC MỪNG SINH NHẬT \`<@${item.id}>\` 🎂🎂 **`);
+    });
+  });
+}
+
+function scheduleBirth(id, date, interaction) {
+  schedule.scheduleJob(id, date, function () {
     send(
       "sendAll",
       `** 🎂🎂 CHÚC MỪNG SINH NHẬT \`<@${interaction.user.id}>\` 🎂🎂 **`,
@@ -35,4 +60,4 @@ function scheduleBirth(date, interaction) {
   console.log(date.toLocaleString("vi-VN"));
 }
 
-module.exports = addSchedule;
+module.exports = { addSchedule, loadSchedule };

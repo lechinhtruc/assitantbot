@@ -1,5 +1,6 @@
 const { getVoiceConnection } = require("@discordjs/voice");
 const send = require("../send");
+const { player } = require("./play");
 
 let queue = require("../../main");
 
@@ -16,6 +17,14 @@ function stop(interaction) {
       } đã yêu cầu dừng chơi nhạc :(`,
       interaction
     );
+    interaction.client.user.setPresence({
+      activities: [
+        {
+          name: process.env.defaultStatus,
+          type: 1,
+        },
+      ],
+    });
   } else {
     send("reply", `**🛑 Có chơi nhạc đâu mà dừng ?? 🤡 ??**`, interaction);
   }
