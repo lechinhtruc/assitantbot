@@ -77,6 +77,28 @@ const commands = [
     .addNumberOption((option) =>
       option.setName("year").setDescription("Năm sinh")
     ),
+  new SlashCommandBuilder()
+    .setName("mute")
+    .setDescription(`Rọ mõm "con chó" bạn muốn =)))`)
+    .addUserOption((option) =>
+      option.setName("user").setDescription(`Tên "con chó" bạn muốn rọ =))`)
+    )
+    .addNumberOption((option) =>
+      option
+        .setName("minutes")
+        .setDescription("Thời gian rọ mõm ( phút ), tối đa 10080 phút (1 tuần)")
+    )
+    .addStringOption((option) =>
+      option
+        .setName("reason")
+        .setDescription("Lý do rọ mõm")
+    ),
+  new SlashCommandBuilder()
+    .setName("unmute")
+    .setDescription(`Tháo rọ mõm`)
+    .addUserOption((option) =>
+      option.setName("user").setDescription(`Tên "con chó" bạn tháo rọ =))`)
+    ),
 ].map((command) => command.toJSON());
 
 module.exports = commands;

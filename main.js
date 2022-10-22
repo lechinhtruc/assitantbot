@@ -11,6 +11,9 @@ const {
   bold,
   IntentsBitField,
   GatewayIntentBits,
+  PermissionsBitField,
+  PermissionFlagsBits,
+  ActivityType,
 } = require("discord.js");
 
 const client = new Client({
@@ -19,7 +22,7 @@ const client = new Client({
     IntentsBitField.Flags.GuildMessages,
     IntentsBitField.Flags.GuildVoiceStates,
     IntentsBitField.Flags.GuildIntegrations,
-    GatewayIntentBits.Guilds,
+    IntentsBitField.Flags.GuildMembers,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMembers,
@@ -58,7 +61,7 @@ client.once("ready", (client) => {
     activities: [
       {
         name: process.env.defaultStatus,
-        type: 1
+        type: 1,
       },
     ],
     status: "idle",
@@ -66,11 +69,25 @@ client.once("ready", (client) => {
   client.channels.cache
     .get(process.env.channelId)
     .send(`${bold("🤖 Trợ lý đang hoạt động")}`);
+
+  /* client.guilds.fetch().then((res) => {
+    console.log(res);
+  }); */
   console.log("Ready!");
 });
 
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
+
+  /* console.log(interaction.member.roles.cache.some((role) => console.log(role.name + " " + role.id))); */
+/*   console.log(
+    interaction.member.roles.cache.some(
+      (role) => role.id === "929975094829281310"
+    )
+  ); */
+  /* interaction.guild.roles.cache.forEach((role) =>
+    console.log(role.name, role.id)
+  ); */
 
   switch (interaction.commandName) {
     case "info":
@@ -85,6 +102,12 @@ client.on("interactionCreate", async (interaction) => {
       break;
     case "randombruh":
       botFunction.randombruh(interaction);
+      break;
+    case "mute":
+      botFunction.mute(interaction);
+      break;
+    case "unmute":
+      botFunction.unmute(interaction);
       break;
     case "play":
       if (interaction.member.voice.channel) {
@@ -128,6 +151,7 @@ client.on("interactionCreate", async (interaction) => {
 client.on("messageCreate", (message) => {
   if (!message.content.startsWith(prefix)) return;
 
+  /* message.guild.roles.forEach(role => console.log(role.name, role.id)) */
   const args = message.content.substring(prefix.length).split(" ");
   switch (args[0].toLocaleLowerCase()) {
     case "play":
