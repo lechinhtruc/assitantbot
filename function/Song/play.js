@@ -12,12 +12,15 @@ const { bold } = require("discord.js");
 let queue = require("../../main");
 let ownerinteraction;
 
+
+
 player.on("stateChange", async (oldState, newState) => {
   if (
     newState.status === AudioPlayerStatus.Idle &&
     oldState.status !== AudioPlayerStatus.Idle
   ) {
     queue.songQueue.shift();
+    console.log(queue.songQueue);
     if (queue.songQueue.length > 0 && queue.songQueue[0] !== undefined) {
       playSong(
         queue.songQueue[0].url,
@@ -65,7 +68,6 @@ function playSong(url, title, interaction) {
     getSongStream(url)
       .then((response) => {
         if (response) {
-          player.stop();
           setTimeout(() => player.play(response), 100);
           send("sendAll", `🎶 Lên nhạc: ${bold(`\`${title}\``)}`, interaction);
         }
@@ -86,15 +88,20 @@ async function getDetailVideo(url, queue, interaction) {
             url: item.shortUrl,
           });
         });
-        await send(
+        const queueNow = queue.map((song, index) => {
+          return `\`${index + 1}. ${song.title}\`\n`;
+        });
+        send(
           "sendAll",
-          `🎶 Thêm danh sách các bài nhạc gồm \`25 bài\` `,
-          interaction
+          `🎶 Thêm danh sách các bài nhạc gồm \`${
+            response.estimatedItemCount
+          } bài\`\n${bold(queueNow.toString().replaceAll(",", ""))}`,
+          ownerinteraction
         );
-        return true;
+        return;
       })
       .catch(async (err) => {
-        await send("reply", `🛑 Danh sách nhạc không hợp lệ! `, interaction);
+        send("reply", `🛑 Danh sách nhạc không hợp lệ! `, ownerinteraction);
         return;
       });
   } else if (url.match(youtubeVideoRegex)) {

@@ -114,7 +114,6 @@ client.on("interactionCreate", async (interaction) => {
       botFunction.unpause(interaction);
       break;
     case "stop":
-      songQueue = [];
       botFunction.stop(interaction);
       break;
     case "birthday":
