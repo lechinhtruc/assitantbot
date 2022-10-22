@@ -146,7 +146,6 @@ client.on("messageCreate", (message) => {
       botFunction.skip(message, songQueue);
       break;
     case "stop":
-      songQueue = [];
       botFunction.stop(message);
       break;
     case "pause":

@@ -1,8 +1,11 @@
 const { getVoiceConnection } = require("@discordjs/voice");
 const send = require("../send");
 
+let queue = require("../../main");
+
 function stop(interaction) {
   if (getVoiceConnection(interaction.guild.id)) {
+    queue.songQueue.splice(0, queue.songQueue.length);
     getVoiceConnection(interaction.guild.id).destroy();
     send(
       "reply",
