@@ -80,6 +80,33 @@ const emojis = {
   },
 };
 
+function addReaction(message, reactions) {
+  message.react(reactions[0]);
+  reactions.shift();
+  if (reactions.length > 0) {
+    setTimeout(() => {
+      addReaction(message, reactions);
+    }, 750);
+  }
+}
+
+function firstMessage(client, content, id, reactions = []) {
+  const channel = client.channels.cache.get(id);
+  channel.messages.fetch().then((mess) => {
+    if (mess.size === 0) {
+      channel.send(content).then((message) => {
+        addReaction(message, reactions);
+      });
+    } else {
+      const firstMess = mess.find(
+        (element) => element.id === "1033662224377585694"
+      );
+      firstMess.edit(content);
+      addReaction(firstMess, reactions);
+    }
+  });
+}
+
 client.once("ready", (client) => {
   const queue = fs.readFileSync(birthDataPath);
   birthQueue = JSON.parse(queue);
@@ -111,33 +138,6 @@ client.once("ready", (client) => {
 
   console.log("Ready!");
 });
-
-function addReaction(message, reactions) {
-  message.react(reactions[0]);
-  reactions.shift();
-  if (reactions.length > 0) {
-    setTimeout(() => {
-      addReaction(message, reactions);
-    }, 750);
-  }
-}
-
-function firstMessage(client, content, id, reactions = []) {
-  const channel = client.channels.cache.get(id);
-  channel.messages.fetch().then((mess) => {
-    if (mess.size === 0) {
-      channel.send(content).then((message) => {
-        addReaction(message, reactions);
-      });
-    } else {
-      const firstMess = mess.find(
-        (element) => element.id === "1033662224377585694"
-      );
-      firstMess.edit(content);
-      addReaction(firstMess, reactions);
-    }
-  });
-}
 
 client.on("messageReactionAdd", (reaction, user) => {
   if (reaction.message.channelId === process.env.assignRoleChannelId) {
@@ -275,12 +275,15 @@ client.on("messageCreate", (message) => {
     case "queue":
       botFunction.queue(message, songQueue);
       break;
+    case "purge":
+      botFunction.purge(message, args[1]);
+      break;
   }
 });
 
 client.on("guildMemberAdd", (member) => {
   member.send("Welcome to The LMAO Coffe 🍵");
-/*   member.roles.set([process.env.defaultRoleId]); */
+  /*   member.roles.set([process.env.defaultRoleId]); */
 });
 
 client.login(process.env.DISCORD_TOKEN);

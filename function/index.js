@@ -23,6 +23,8 @@ const randombruh = require("./randombruh");
 /* Gif */
 const gif = require("./gif");
 
+const purge = require("./purge");
+
 module.exports = {
   play,
   send,
@@ -40,4 +42,5 @@ module.exports = {
   help,
   info,
   gif,
+  purge,
 };
