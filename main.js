@@ -11,10 +11,6 @@ const {
   bold,
   IntentsBitField,
   GatewayIntentBits,
-  PermissionsBitField,
-  PermissionFlagsBits,
-  ActivityType,
-  ChannelFlagsBitField,
 } = require("discord.js");
 
 const client = new Client({
@@ -24,7 +20,6 @@ const client = new Client({
     IntentsBitField.Flags.GuildVoiceStates,
     IntentsBitField.Flags.GuildIntegrations,
     IntentsBitField.Flags.GuildMembers,
-
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMessageReactions,
@@ -37,10 +32,14 @@ const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
 
 const commands = require("./commands");
 const birthDataPath = "./data/birthData.json";
-const prefix = process.env.prefix;
+const emojiConfigPath = "./config/emoji.json";
+const botConfigPath = "./config/bot.json";
 
 let songQueue = [];
 let birthQueue = [];
+let emojis = {};
+let config = {};
+
 /* let currentSongName = "";
 let currentSong = 0; */
 
@@ -55,30 +54,6 @@ let currentSong = 0; */
     console.error(error);
   }
 })();
-
-const emojis = {
-  pphavegun: { description: "FPS Player", role: process.env.fpsRoleId },
-  nanithefuck: {
-    description: "Hoyoverse Player",
-    role: process.env.hoyoRoleId,
-  },
-  lmao: {
-    description: "Blue Lmao",
-    role: "700727015178895420",
-  },
-  girlclowd: {
-    description: "Pinky Lmao",
-    role: "691599233136066620",
-  },
-  fsmile: {
-    description: "White Lmao",
-    role: "687677259783602297",
-  },
-  cauvang: {
-    description: "Yellow Lmao",
-    role: "840275984854548500",
-  },
-};
 
 function addReaction(message, reactions) {
   message.react(reactions[0]);
@@ -109,77 +84,74 @@ function firstMessage(client, content, id, reactions = []) {
 
 client.once("ready", (client) => {
   const queue = fs.readFileSync(birthDataPath);
+  const emojiConfig = fs.readFileSync(emojiConfigPath);
+  const botConfig = fs.readFileSync(botConfigPath);
+  const reactions = [];
+  const reactionEmoji = (emojiName) =>
+    client.emojis.cache.find((emoji) => emoji.name === emojiName);
+  let content = "";
+  emojis = JSON.parse(emojiConfig);
   birthQueue = JSON.parse(queue);
+  config = JSON.parse(botConfig);
+  exports.config = config;
   botFunction.loadSchedule(birthQueue, client);
   client.user.setPresence({
     activities: [
       {
-        name: process.env.defaultStatus,
+        name: config.defaultStatus,
         type: 1,
       },
     ],
-    status: "idle",
+    status: config.status,
   });
-  /* client.channels.cache
-    .get(process.env.channelId)
-    .send(`${bold("🤖 Trợ lý đang hoạt động")}`); */
-  /* const role = client.guilds.cache.get(process.env.guildId); */
-  const reactionEmoji = (emojiName) =>
-    client.emojis.cache.find((emoji) => emoji.name === emojiName);
-  const reactions = [];
-  let content = "";
   for (const key in emojis) {
     const emoji = reactionEmoji(key);
     reactions.push(emoji);
     const description = emojis[key].description;
     content += `${emoji} : ${description}\n`;
   }
-  firstMessage(client, content, process.env.assignRoleChannelId, reactions);
-
+  firstMessage(client, content, config.assignRoleChannelId, reactions);
   console.log("Ready!");
+  /* client.channels.cache
+    .get(process.env.channelId)
+    .send(`${bold("🤖 Trợ lý đang hoạt động")}`); */
+  /* const role = client.guilds.cache.get(process.env.guildId); */
 });
 
 client.on("messageReactionAdd", (reaction, user) => {
-  if (reaction.message.channelId === process.env.assignRoleChannelId) {
+  if (reaction.message.channelId === config.assignRoleChannelId) {
     if (user.id === "1031427178698637333") {
       return;
     }
     const emoji = reaction.emoji.name;
     const { guild } = reaction.message;
-    const roleid = emojis[emoji].role;
+    const roleid = emojis[emoji]?.role;
     const role = guild.roles.cache.find((role) => role.id === roleid);
     const member = guild.members.cache.find((member) => member.id === user.id);
-    member.roles.add(role);
+    member.roles.add(role).catch(() => {
+      return;
+    });
   }
 });
 
 client.on("messageReactionRemove", (reaction, user) => {
-  if (reaction.message.channelId === process.env.assignRoleChannelId) {
-    if (user.id === "1031427178698637333") {
+  if (reaction.message.channelId === config.assignRoleChannelId) {
+    if (user.id === config.botId) {
       return;
     }
     const emoji = reaction.emoji.name;
     const { guild } = reaction.message;
-    const roleid = emojis[emoji].role;
+    const roleid = emojis[emoji]?.role;
     const role = guild.roles.cache.find((role) => role.id === roleid);
     const member = guild.members.cache.find((member) => member.id === user.id);
-    member.roles.remove(role);
+    member.roles.remove(role).catch(() => {
+      return;
+    });
   }
 });
 
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
-
-  /* console.log(interaction.member.roles.cache.some((role) => console.log(role.name + " " + role.id))); */
-  /*   console.log(
-    interaction.member.roles.cache.some(
-      (role) => role.id === "929975094829281310"
-    )
-  ); */
-  /* interaction.guild.roles.cache.forEach((role) =>
-    console.log(role.name, role.id)
-  ); */
-
   switch (interaction.commandName) {
     case "info":
       botFunction.info(interaction);
@@ -240,10 +212,11 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 client.on("messageCreate", (message) => {
-  if (!message.content.startsWith(prefix)) return;
-
+  if (!message.content.startsWith(config.prefix)) {
+    return;
+  }
   /* message.guild.roles.forEach(role => console.log(role.name, role.id)) */
-  const args = message.content.substring(prefix.length).split(" ");
+  const args = message.content.substring(config.prefix.length).split(" ");
   switch (args[0].toLocaleLowerCase()) {
     case "play":
       if (message.member.voice.channel) {

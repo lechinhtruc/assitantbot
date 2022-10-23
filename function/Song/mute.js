@@ -1,4 +1,5 @@
 const send = require("../send");
+const config = require("../../main");
 
 async function mute(interaction) {
   const userId = interaction.options.getUser("user").id;
@@ -9,7 +10,8 @@ async function mute(interaction) {
   if (
     interaction.member.roles.cache.some(
       (role) =>
-        role.id === process.env.modRoleId || role.id === process.env.adminRoleId
+        role.id === config.config.modRoleId ||
+        role.id === config.config.adminRoleId
     )
   ) {
     await member

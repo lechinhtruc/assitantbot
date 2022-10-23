@@ -1,10 +1,12 @@
+const config = require("../main");
+
 function purge(interaction, amount) {
   try {
     if (
       interaction.member.roles.cache.some(
         (role) =>
-          role.id === process.env.modRoleId ||
-          role.id === process.env.adminRoleId
+          role.id === config.config.modRoleId ||
+          role.id === config.config.adminRoleId
       ) &&
       !isNaN(amount) &&
       amount <= 100
@@ -14,7 +16,8 @@ function purge(interaction, amount) {
       interaction.reply(`⛔ Không thể xoá tin nhắn vào lúc này!`);
     }
   } catch {
-    return false;
+    throw err;
+    /* return false; */
   }
 }
 
