@@ -7,9 +7,13 @@ function info(interaction) {
     if (user) {
       send(
         "reply",
-        `${bold("| THÔNG TIN NGƯỜI DÙNG |")}\n 🧑 Tên: ${
-          user.username
-        }\n 🪪 ID: ${user.id}`,
+        `${bold("| THÔNG TIN NGƯỜI DÙNG |")}\n🧑 Tên: ${user.username}\n🪪 ID: ${
+          user.id
+        }\n🕓 Ngày tạo: ${interaction.user.createdAt.toLocaleString(
+          "vi-VN"
+        )}\n🤡 Ngày gia nhập LMAO: ${interaction.member.joinedAt.toLocaleString(
+          "vi-VN"
+        )}`,
         interaction
       );
     } else {
@@ -17,7 +21,13 @@ function info(interaction) {
         "reply",
         `${bold("| THÔNG TIN CỦA BẠN |")}\n🧑 Tên: ${
           interaction.user.username
-        }\n🪪 ID: ${interaction.user.id}`,
+        }\n🪪 ID: ${
+          interaction.user.id
+        }\n🕓 Ngày tạo: ${interaction.user.createdAt.toLocaleString(
+          "vi-VN"
+        )}\n🤡 Ngày gia nhập LMAO: ${interaction.member.joinedAt.toLocaleString(
+          "vi-VN"
+        )}`,
         interaction
       );
     }

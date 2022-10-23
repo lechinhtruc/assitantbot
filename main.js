@@ -14,6 +14,7 @@ const {
   PermissionsBitField,
   PermissionFlagsBits,
   ActivityType,
+  ChannelFlagsBitField,
 } = require("discord.js");
 
 const client = new Client({
@@ -23,8 +24,10 @@ const client = new Client({
     IntentsBitField.Flags.GuildVoiceStates,
     IntentsBitField.Flags.GuildIntegrations,
     IntentsBitField.Flags.GuildMembers,
+
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildVoiceStates,
   ],
@@ -53,6 +56,30 @@ let currentSong = 0; */
   }
 })();
 
+const emojis = {
+  pphavegun: { description: "FPS Player", role: process.env.fpsRoleId },
+  nanithefuck: {
+    description: "Hoyoverse Player",
+    role: process.env.hoyoRoleId,
+  },
+  lmao: {
+    description: "Blue Lmao",
+    role: "700727015178895420",
+  },
+  girlclowd: {
+    description: "Pinky Lmao",
+    role: "691599233136066620",
+  },
+  fsmile: {
+    description: "White Lmao",
+    role: "687677259783602297",
+  },
+  cauvang: {
+    description: "Yellow Lmao",
+    role: "840275984854548500",
+  },
+};
+
 client.once("ready", (client) => {
   const queue = fs.readFileSync(birthDataPath);
   birthQueue = JSON.parse(queue);
@@ -66,21 +93,85 @@ client.once("ready", (client) => {
     ],
     status: "idle",
   });
-  client.channels.cache
+  /* client.channels.cache
     .get(process.env.channelId)
-    .send(`${bold("🤖 Trợ lý đang hoạt động")}`);
+    .send(`${bold("🤖 Trợ lý đang hoạt động")}`); */
+  /* const role = client.guilds.cache.get(process.env.guildId); */
+  const reactionEmoji = (emojiName) =>
+    client.emojis.cache.find((emoji) => emoji.name === emojiName);
+  const reactions = [];
+  let content = "";
+  for (const key in emojis) {
+    const emoji = reactionEmoji(key);
+    reactions.push(emoji);
+    const description = emojis[key].description;
+    content += `${emoji} : ${description}\n`;
+  }
+  firstMessage(client, content, process.env.assignRoleChannelId, reactions);
 
-  /* client.guilds.fetch().then((res) => {
-    console.log(res);
-  }); */
   console.log("Ready!");
+});
+
+function addReaction(message, reactions) {
+  message.react(reactions[0]);
+  reactions.shift();
+  if (reactions.length > 0) {
+    setTimeout(() => {
+      addReaction(message, reactions);
+    }, 750);
+  }
+}
+
+function firstMessage(client, content, id, reactions = []) {
+  const channel = client.channels.cache.get(id);
+  channel.messages.fetch().then((mess) => {
+    if (mess.size === 0) {
+      channel.send(content).then((message) => {
+        addReaction(message, reactions);
+      });
+    } else {
+      const firstMess = mess.find(
+        (element) => element.id === "1033662224377585694"
+      );
+      firstMess.edit(content);
+      addReaction(firstMess, reactions);
+    }
+  });
+}
+
+client.on("messageReactionAdd", (reaction, user) => {
+  if (reaction.message.channelId === process.env.assignRoleChannelId) {
+    if (user.id === "1031427178698637333") {
+      return;
+    }
+    const emoji = reaction.emoji.name;
+    const { guild } = reaction.message;
+    const roleid = emojis[emoji].role;
+    const role = guild.roles.cache.find((role) => role.id === roleid);
+    const member = guild.members.cache.find((member) => member.id === user.id);
+    member.roles.add(role);
+  }
+});
+
+client.on("messageReactionRemove", (reaction, user) => {
+  if (reaction.message.channelId === process.env.assignRoleChannelId) {
+    if (user.id === "1031427178698637333") {
+      return;
+    }
+    const emoji = reaction.emoji.name;
+    const { guild } = reaction.message;
+    const roleid = emojis[emoji].role;
+    const role = guild.roles.cache.find((role) => role.id === roleid);
+    const member = guild.members.cache.find((member) => member.id === user.id);
+    member.roles.remove(role);
+  }
 });
 
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   /* console.log(interaction.member.roles.cache.some((role) => console.log(role.name + " " + role.id))); */
-/*   console.log(
+  /*   console.log(
     interaction.member.roles.cache.some(
       (role) => role.id === "929975094829281310"
     )
@@ -187,7 +278,11 @@ client.on("messageCreate", (message) => {
   }
 });
 
+client.on("guildMemberAdd", (member) => {
+  member.send("Welcome to The LMAO Coffe 🍵");
+/*   member.roles.set([process.env.defaultRoleId]); */
+});
+
 client.login(process.env.DISCORD_TOKEN);
 
 exports.songQueue = songQueue;
-/* console.log(process.env.DISCORD_TOKEN) */
