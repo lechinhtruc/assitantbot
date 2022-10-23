@@ -28,7 +28,7 @@ player.on("stateChange", async (oldState, newState) => {
       ownerinteraction.client.user.setPresence({
         activities: [
           {
-            name: process.env.defaultStatus,
+            name: queue.config.defaultStatus,
             type: 1,
           },
         ],

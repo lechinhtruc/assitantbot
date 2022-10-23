@@ -1,5 +1,5 @@
-const send = require("../send");
-const config = require("../../main");
+const send = require("./send");
+const config = require("../main");
 
 async function mute(interaction) {
   const userId = interaction.options.getUser("user").id;

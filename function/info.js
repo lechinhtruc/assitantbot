@@ -1,10 +1,15 @@
 const { bold } = require("discord.js");
 const send = require("./send");
+const birthQueue = require("../main");
 
 function info(interaction) {
   if (interaction.options.getSubcommand() === "user") {
     const user = interaction.options.getUser("target");
     if (user) {
+      const bornData = birthQueue.birthQueue.find(
+        (birth) => birth.id === user?.id
+      );
+      const bornDate = new Date(bornData?.born);
       send(
         "reply",
         `${bold("| THÔNG TIN NGƯỜI DÙNG |")}\n🧑 Tên: ${user.username}\n🪪 ID: ${
@@ -13,10 +18,14 @@ function info(interaction) {
           "vi-VN"
         )}\n🤡 Ngày gia nhập LMAO: ${interaction.member.joinedAt.toLocaleString(
           "vi-VN"
-        )}`,
+        )}\n🎂 Ngày sinh: ${bornDate.toLocaleDateString("vi-VN")}`,
         interaction
       );
     } else {
+      const bornData = birthQueue.birthQueue.find(
+        (birth) => birth.id === interaction.user?.id
+      );
+      const bornDate = new Date(bornData?.born);
       send(
         "reply",
         `${bold("| THÔNG TIN CỦA BẠN |")}\n🧑 Tên: ${
@@ -27,7 +36,7 @@ function info(interaction) {
           "vi-VN"
         )}\n🤡 Ngày gia nhập LMAO: ${interaction.member.joinedAt.toLocaleString(
           "vi-VN"
-        )}`,
+        )}\n🎂 Ngày sinh: ${bornDate.toLocaleDateString("vi-VN")}`,
         interaction
       );
     }

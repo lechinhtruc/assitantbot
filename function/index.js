@@ -5,7 +5,6 @@ const skip = require("./Song/skip");
 const queue = require("./Song/queue");
 const stop = require("./Song/stop");
 const skipto = require("./Song/skipto");
-const { mute, unmute } = require("./Song/mute");
 const { pause, unpause } = require("./Song/pause");
 
 /* Schedule */
@@ -25,6 +24,10 @@ const gif = require("./gif");
 
 const purge = require("./purge");
 
+const error = require("./error");
+
+const { mute, unmute } = require("./mute");
+
 module.exports = {
   play,
   send,
@@ -43,4 +46,5 @@ module.exports = {
   info,
   gif,
   purge,
+  error,
 };

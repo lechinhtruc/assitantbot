@@ -94,6 +94,7 @@ client.once("ready", (client) => {
   birthQueue = JSON.parse(queue);
   config = JSON.parse(botConfig);
   exports.config = config;
+  exports.birthQueue = birthQueue;
   botFunction.loadSchedule(birthQueue, client);
   client.user.setPresence({
     activities: [
@@ -250,6 +251,9 @@ client.on("messageCreate", (message) => {
       break;
     case "purge":
       botFunction.purge(message, args[1]);
+      break;
+    default:
+      botFunction.error(message);
       break;
   }
 });

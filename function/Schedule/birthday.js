@@ -3,10 +3,10 @@ const fs = require("fs");
 const send = require("../send");
 
 function addSchedule(interaction, birthDataPath, birthQueue) {
-  const userId = interaction.user.id;
-  const birthDay = interaction.options.getNumber("day");
-  const birthMonth = interaction.options.getNumber("month");
-  const birthYear = interaction.options.getNumber("year");
+  const userId = interaction.user?.id;
+  const birthDay = interaction.options?.getNumber("day");
+  const birthMonth = interaction.options?.getNumber("month");
+  const birthYear = interaction.options?.getNumber("year");
   const year = new Date();
   const born = new Date(birthYear, birthMonth - 1, birthDay, 0, 0, 0);
   const exits = birthQueue.findIndex((item) => item.id === userId);
