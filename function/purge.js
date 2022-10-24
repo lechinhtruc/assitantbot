@@ -5,7 +5,7 @@ function purge(interaction, amount) {
     if (
       interaction.member.roles.cache.some(
         (role) =>
-        /*   role.id === config.config.modRoleId || */
+          /*   role.id === config.config.modRoleId || */
           role.id === config.config.adminRoleId
       ) &&
       !isNaN(amount) &&
@@ -13,11 +13,12 @@ function purge(interaction, amount) {
     ) {
       interaction.channel.bulkDelete(amount);
     } else {
-      interaction.reply(`⛔ Không thể xoá tin nhắn vào lúc này!`);
+      interaction.reply(
+        `⛔ Không thể xoá tin nhắn vào lúc này!\n**Lưu ý : Xoá được tối đa 100 tin/lần**`
+      );
     }
   } catch {
-    throw err;
-    /* return false; */
+    return false;
   }
 }
 
