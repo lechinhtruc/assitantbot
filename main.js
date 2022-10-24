@@ -34,11 +34,13 @@ const commands = require("./commands");
 const birthDataPath = "./data/birthData.json";
 const emojiConfigPath = "./config/emoji.json";
 const botConfigPath = "./config/bot.json";
+const serverLogsPath = "./data/serverLogs.json";
 
 let songQueue = [];
 let birthQueue = [];
 let emojis = {};
 let config = {};
+let serverLogs = [];
 
 /* let currentSongName = "";
 let currentSong = 0; */
@@ -86,6 +88,7 @@ client.once("ready", (client) => {
   const queue = fs.readFileSync(birthDataPath);
   const emojiConfig = fs.readFileSync(emojiConfigPath);
   const botConfig = fs.readFileSync(botConfigPath);
+
   const reactions = [];
   const reactionEmoji = (emojiName) =>
     client.emojis.cache.find((emoji) => emoji.name === emojiName);
@@ -264,6 +267,41 @@ client.on("messageCreate", (message) => {
 client.on("guildMemberAdd", (member) => {
   member.send("Welcome to The LMAO Coffe 🍵");
   /*   member.roles.set([process.env.defaultRoleId]); */
+});
+
+client.on("voiceStateUpdate", (oldState, newState) => {
+  const serverLogsData = fs.readFileSync(serverLogsPath);
+  const date = new Date();
+  serverLogs = JSON.parse(serverLogsData);
+  if (oldState.channelId === null) {
+    serverLogs.push({
+      user: {
+        name: newState.member.displayName,
+        event: `Join Voice ${newState.channel.name}`,
+        time: date.toLocaleString("vi-VN"),
+      },
+    });
+  } else if (newState.channelId === null) {
+    serverLogs.push({
+      user: {
+        name: newState.member.displayName,
+        event: `Leave Voice ${oldState.channel.name}`,
+        time: date.toLocaleString("vi-VN"),
+      },
+    });
+  } else {
+    serverLogs.push({
+      user: {
+        name: newState.member.displayName,
+        event: `Moved Voice from ${oldState.channel.name} to ${newState.channel.name}`,
+        time: date.toLocaleString("vi-VN"),
+      },
+    });
+  }
+
+  setTimeout(() => {
+    fs.writeFileSync(serverLogsPath, JSON.stringify(serverLogs));
+  }, 500);
 });
 
 client.login(process.env.DISCORD_TOKEN);

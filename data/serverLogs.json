@@ -1,0 +1,23 @@
+[
+    {
+        "user": {
+            "name": "letruc",
+            "event": "Join Voice ☕ Coffee",
+            "time": "18:21:34, 24/10/2022"
+        }
+    },
+    {
+        "user": {
+            "name": "letruc",
+            "event": "Moved Voice from ☕ Coffee to 🍵 Tea",
+            "time": "18:21:44, 24/10/2022"
+        }
+    },
+    {
+        "user": {
+            "name": "letruc",
+            "event": "Leave Voice 🍵 Tea",
+            "time": "18:21:50, 24/10/2022"
+        }
+    }
+]
