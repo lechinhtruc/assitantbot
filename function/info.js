@@ -19,8 +19,8 @@ function info(interaction) {
         )}\n🤡 Ngày gia nhập LMAO: ${interaction.member.joinedAt.toLocaleString(
           "vi-VN"
         )}\n🎂 Ngày sinh: ${bornDate.toLocaleDateString("vi-VN")}\n🔞 Tuổi: ${
-          bornData?.age.years
-        } năm - ${bornData?.age.months} tháng - ${bornData?.age.days} ngày
+          bornData?.age?.years
+        } năm - ${bornData?.age?.months} tháng - ${bornData?.age?.days} ngày
         `,
         interaction
       );
@@ -40,8 +40,8 @@ function info(interaction) {
         )}\n🤡 Ngày gia nhập LMAO: ${interaction.member.joinedAt.toLocaleString(
           "vi-VN"
         )}\n🎂 Ngày sinh: ${bornDate.toLocaleDateString("vi-VN")}\n🔞 Tuổi: ${
-          bornData?.age.years
-        } năm - ${bornData?.age.months} tháng - ${bornData?.age.days} ngày`,
+          bornData?.age?.years
+        } năm - ${bornData?.age?.months} tháng - ${bornData?.age?.days} ngày`,
         interaction
       );
     }

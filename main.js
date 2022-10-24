@@ -221,7 +221,9 @@ client.on("messageCreate", (message) => {
   switch (args[0].toLocaleLowerCase()) {
     case "play":
       if (message.member.voice.channel) {
-        botFunction.play(message);
+        setTimeout(() => {
+          botFunction.play(message);
+        }, 500);
       } else {
         botFunction.send(
           "reply",
