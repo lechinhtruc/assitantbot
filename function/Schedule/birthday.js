@@ -2,6 +2,42 @@ const schedule = require("node-schedule");
 const fs = require("fs");
 const send = require("../send");
 
+function calculateAge(
+  currentYear,
+  currentDate,
+  currentMonth,
+  bornYear,
+  bornDate,
+  bornMonth
+) {
+  var age = {};
+  var yearAge = currentYear - bornYear;
+  var dateAge = 0;
+  var monthAge = 0;
+  if (currentMonth >= bornMonth) {
+    monthAge = currentMonth - bornMonth;
+  } else {
+    yearAge--;
+    monthAge = 12 + currentMonth - bornMonth;
+  }
+  if (currentDate >= bornDate) {
+    dateAge = currentDate - bornDate;
+  } else {
+    monthAge--;
+    dateAge = 31 + currentDate - bornDate;
+    if (monthAge < 0) {
+      monthAge = 11;
+      yearAge--;
+    }
+  }
+  age = {
+    years: yearAge,
+    months: monthAge,
+    days: dateAge,
+  };
+  return age;
+}
+
 function addSchedule(interaction, birthDataPath, birthQueue) {
   const userId = interaction.user?.id;
   const birthDay = interaction.options?.getNumber("day");
@@ -20,6 +56,14 @@ function addSchedule(interaction, birthDataPath, birthQueue) {
     birthQueue[exits].born = born;
     birthQueue[exits].birth = date;
     birthQueue[exits].channelId = interaction.channelId;
+    birthQueue[exits].age = calculateAge(
+      year.getFullYear(),
+      year.getDate(),
+      year.getMonth(),
+      born.getFullYear(),
+      born.getDate(),
+      born.getMonth()
+    );
     schedule.cancelJob(userId);
   } else {
     birthQueue.push({
@@ -27,6 +71,14 @@ function addSchedule(interaction, birthDataPath, birthQueue) {
       channelId: interaction.channelId,
       born: born,
       birth: date,
+      age: calculateAge(
+        year.getFullYear(),
+        year.getDate(),
+        year.getMonth(),
+        born.getFullYear(),
+        born.getDate(),
+        born.getMonth()
+      ),
     });
   }
 
