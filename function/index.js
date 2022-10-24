@@ -28,6 +28,8 @@ const error = require("./error");
 
 const { mute, unmute } = require("./mute");
 
+const filter = require("./filter");
+
 module.exports = {
   play,
   send,
@@ -47,4 +49,5 @@ module.exports = {
   gif,
   purge,
   error,
+  filter,
 };

@@ -213,13 +213,9 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 client.on("messageCreate", (message) => {
-  const word = ["ngu", "vô", "dụng", "địt", "mẹ", "đầu buồi", "buồi", "cặc"];
   if (!message.content.startsWith(config.prefix)) {
-    for (let i = 0; i <= word.length; i++) {
-      if (message.content.toLowerCase().includes(word[i])) {
-        message.reply("Địt con bà mày 😏😏");
-      }
-    }
+    botFunction.filter(message, config);
+    return;
   }
   /* message.guild.roles.forEach(role => console.log(role.name, role.id)) */
   const args = message.content.substring(config.prefix.length).split(" ");
