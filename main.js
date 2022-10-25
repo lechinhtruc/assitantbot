@@ -156,9 +156,16 @@ client.on("messageReactionRemove", (reaction, user) => {
 
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
+
+  const user1 = interaction.options.getUser("target");
+  
+
+  /* user.fetch().then((res) => {
+    console.log(res);
+  }); */
   switch (interaction.commandName) {
     case "info":
-      botFunction.info(interaction);
+       botFunction.info(interaction);
       break;
     case "gif":
       try {

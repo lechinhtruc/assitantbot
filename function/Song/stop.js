@@ -20,7 +20,7 @@ function stop(interaction) {
     interaction.client.user.setPresence({
       activities: [
         {
-          name: process.env.defaultStatus,
+          name: queue.config.defaultStatus,
           type: 1,
         },
       ],

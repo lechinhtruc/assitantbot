@@ -5,7 +5,7 @@ function purge(interaction, amount) {
     if (
       interaction.member.roles.cache.some(
         (role) =>
-          /*   role.id === config.config.modRoleId || */
+            role.id === config.config.modRoleId ||
           role.id === config.config.adminRoleId
       ) &&
       !isNaN(amount) &&

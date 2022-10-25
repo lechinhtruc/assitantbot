@@ -2,9 +2,14 @@ const { bold } = require("discord.js");
 const send = require("./send");
 const birthQueue = require("../main");
 
-function info(interaction) {
+async function info(interaction) {
   if (interaction.options.getSubcommand() === "user") {
     const user = interaction.options.getUser("target");
+    let joinat = 0;
+    await interaction.guild.members.fetch(user.id).then((res) => {
+      joinat = res.joinedAt;
+    });
+
     if (user) {
       const bornData = birthQueue.birthQueue.find(
         (birth) => birth.id === user?.id
@@ -14,9 +19,9 @@ function info(interaction) {
         "reply",
         `${bold("| THÔNG TIN NGƯỜI DÙNG |")}\n🧑 Tên: ${user.username}\n🪪 ID: ${
           user.id
-        }\n🕓 Ngày tạo: ${interaction.user.createdAt.toLocaleString(
+        }\n🕓 Ngày tạo: ${user?.createdAt?.toLocaleString(
           "vi-VN"
-        )}\n🤡 Ngày gia nhập LMAO: ${interaction.member.joinedAt.toLocaleString(
+        )}\n🤡 Ngày gia nhập LMAO: ${joinat?.toLocaleString(
           "vi-VN"
         )}\n🎂 Ngày sinh: ${bornDate.toLocaleDateString("vi-VN")}\n🔞 Tuổi: ${
           bornData?.age?.years
