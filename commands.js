@@ -18,7 +18,7 @@ const commands = [
   new SlashCommandBuilder()
     .setName("gif")
     .setDescription("Gửi ảnh gif ngẫu nhiên")
-    .addStringOption((option) =>
+    .addStringOption((option) => 
       option
         .setName("category")
         .setDescription("The gif category")
