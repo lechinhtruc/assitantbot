@@ -6,11 +6,11 @@ async function info(interaction) {
   if (interaction.options.getSubcommand() === "user") {
     const user = interaction.options.getUser("target");
     let joinat = 0;
-    await interaction.guild.members.fetch(user.id).then((res) => {
-      joinat = res.joinedAt;
-    });
 
     if (user) {
+      await interaction.guild.members.fetch(user.id).then((res) => {
+        joinat = res.joinedAt;
+      });
       const bornData = birthQueue.birthQueue.find(
         (birth) => birth.id === user?.id
       );
@@ -37,12 +37,12 @@ async function info(interaction) {
       send(
         "reply",
         `${bold("| THÔNG TIN CỦA BẠN |")}\n🧑 Tên: ${
-          interaction.user.username
+          interaction?.user?.username
         }\n🪪 ID: ${
-          interaction.user.id
-        }\n🕓 Ngày tạo: ${interaction.user.createdAt.toLocaleString(
+          interaction?.user?.id
+        }\n🕓 Ngày tạo: ${interaction?.user?.createdAt.toLocaleString(
           "vi-VN"
-        )}\n🤡 Ngày gia nhập LMAO: ${interaction.member.joinedAt.toLocaleString(
+        )}\n🤡 Ngày gia nhập LMAO: ${interaction?.member?.joinedAt.toLocaleString(
           "vi-VN"
         )}\n🎂 Ngày sinh: ${bornDate.toLocaleDateString("vi-VN")}\n🔞 Tuổi: ${
           bornData?.age?.years
