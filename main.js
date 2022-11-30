@@ -158,14 +158,10 @@ client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   const user1 = interaction.options.getUser("target");
-  
 
-  /* user.fetch().then((res) => {
-    console.log(res);
-  }); */
   switch (interaction.commandName) {
     case "info":
-       botFunction.info(interaction);
+      botFunction.info(interaction);
       break;
     case "gif":
       try {
@@ -258,6 +254,9 @@ client.on("messageCreate", (message) => {
     case "skipto":
       const position = args[1];
       botFunction.skipto(message, songQueue, position);
+      break;
+    case "repeat":
+      botFunction.Repeat(message);
       break;
     case "queue":
       botFunction.queue(message, songQueue);

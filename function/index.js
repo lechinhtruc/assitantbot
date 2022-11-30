@@ -1,5 +1,5 @@
 /* Song */
-const { play } = require("./Song/play");
+const { play, Repeat } = require("./Song/play");
 const send = require("./send");
 const skip = require("./Song/skip");
 const queue = require("./Song/queue");
@@ -36,6 +36,7 @@ module.exports = {
   skip,
   stop,
   mute,
+  Repeat,
   unmute,
   pause,
   unpause,

@@ -10,6 +10,8 @@ const send = require("../send");
 const { bold } = require("discord.js");
 
 let queue = require("../../main");
+let repeat = false;
+let indexSong = 0;
 let ownerinteraction;
 
 player.on("stateChange", async (oldState, newState) => {
@@ -17,14 +19,16 @@ player.on("stateChange", async (oldState, newState) => {
     newState.status === AudioPlayerStatus.Idle &&
     oldState.status !== AudioPlayerStatus.Idle
   ) {
-    queue.songQueue.shift();
-    if (queue.songQueue.length > 0 && queue.songQueue[0] !== undefined) {
+    indexSong += 1;
+    if (queue.songQueue[indexSong]?.url !== undefined) {
       playSong(
-        queue.songQueue[0].url,
-        queue.songQueue[0].title,
+        queue.songQueue[indexSong].url,
+        queue.songQueue[indexSong].title,
         ownerinteraction
       );
-    } else {
+    } else if (!repeat) {
+      indexSong = 0;
+      queue.songQueue.splice(0, queue.songQueue.length);
       ownerinteraction.client.user.setPresence({
         activities: [
           {
@@ -33,6 +37,13 @@ player.on("stateChange", async (oldState, newState) => {
           },
         ],
       });
+    } else {
+      indexSong = 0;
+      playSong(
+        queue.songQueue[indexSong].url,
+        queue.songQueue[indexSong].title,
+        ownerinteraction
+      );
     }
   }
 });
@@ -69,12 +80,26 @@ function play(interaction) {
   }
 }
 
+function Repeat(interaction) {
+  if (!repeat) {
+    repeat = true;
+    interaction.reply({
+      content: `🎶 ${bold("🔁 Chế độ phát lại được bật.")}`,
+    });
+  } else {
+    repeat = false;
+    interaction.reply({
+      content: `🎶 ${bold("❌ Tắt chế độ phát lại.")}`,
+    });
+  }
+}
+
 function playSong(url, title, interaction) {
   if (url !== undefined) {
     getSongStream(url)
       .then((response) => {
         if (response) {
-          setTimeout(() => player.play(response), 100);
+          player.play(response);
           send("sendAll", `🎶 Lên nhạc: ${bold(`\`${title}\``)}`, interaction);
           interaction.client.user.setPresence({
             activities: [
@@ -159,4 +184,4 @@ async function getSongStream(url) {
   return stream;
 }
 
-module.exports = { play, playSong, player };
+module.exports = { play, playSong, player, Repeat };
